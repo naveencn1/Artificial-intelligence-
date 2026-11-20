@@ -1,0 +1,52 @@
+% CSA17 - Artificial Intelligence | Experiment 23 (Manual Ex. 3.3): Prolog: Family Tree
+% Name            : V V Naveen Kumar
+% Register Number : 192321018
+
+male(rajan). male(kumar). male(arun). male(selvam). male(vijay).
+female(lakshmi). female(meena). female(sita). female(divya).
+
+parent(rajan, kumar). parent(lakshmi, kumar).
+parent(rajan, meena). parent(lakshmi, meena).
+parent(kumar, arun). parent(sita, arun).
+parent(kumar, divya). parent(sita, divya).
+parent(meena, vijay). parent(selvam, vijay).
+
+father(F, C) :- parent(F, C), male(F).
+mother(M, C) :- parent(M, C), female(M).
+grandparent(G, C) :- parent(G, P), parent(P, C).
+sibling(X, Y) :- mother(M, X), mother(M, Y), X \= Y.
+uncle(U, N) :- male(U), sibling(U, P), parent(P, N).
+aunt(A, N) :- female(A), sibling(A, P), parent(P, N).
+ancestor(A, D) :- parent(A, D).
+ancestor(A, D) :- parent(A, X), ancestor(X, D).
+
+
+/* ============================================================
+   OUTPUT (queries and answers)
+   ============================================================
+?- father(F, arun).
+F = kumar.
+
+?- mother(M, vijay).
+M = meena.
+
+?- grandparent(G, divya).
+G = rajan ;
+G = lakshmi.
+
+?- sibling(arun, S).
+S = divya.
+
+?- uncle(U, vijay).
+U = kumar.
+
+?- aunt(A, arun).
+A = meena.
+
+?- ancestor(rajan, D).
+D = kumar ;
+D = meena ;
+D = arun ;
+D = divya ;
+D = vijay.
+*/

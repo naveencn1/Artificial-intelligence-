@@ -1,0 +1,44 @@
+# CSA17 - Artificial Intelligence | Experiment 44 (Manual Ex. 5.4): Image Segmentation using Computer Vision
+# Name            : V V Naveen Kumar
+# Register Number : 192321018
+
+import cv2
+import numpy as np
+
+# 1. Synthetic image: dark background, three bright circles, Gaussian noise
+rng = np.random.RandomState(0)
+img = np.full((200, 200), 40, dtype=np.uint8)
+cv2.circle(img, (50, 60), 25, 200, -1)
+cv2.circle(img, (140, 50), 18, 180, -1)
+cv2.circle(img, (110, 140), 30, 220, -1)
+noisy = np.clip(img + rng.normal(0, 15, img.shape), 0, 255).astype(np.uint8)
+# For a real picture use: noisy = cv2.imread('photo.jpg', cv2.IMREAD_GRAYSCALE)
+
+# 2. Smooth and threshold (Otsu)
+blur = cv2.GaussianBlur(noisy, (5, 5), 0)
+thresh_value, mask = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+print("Otsu threshold selected:", thresh_value)
+
+# 3. Label connected regions
+count, labels, stats, centroids = cv2.connectedComponentsWithStats(mask)
+print("Segments found (excluding background):", count - 1)
+for i in range(1, count):
+    print(" Segment %d: area = %5d px, centroid = (%.0f, %.0f)" %
+        (i, stats[i, cv2.CC_STAT_AREA], centroids[i][0], centroids[i][1]))
+
+# 4. Colour each segment and save
+colours = np.random.RandomState(1).randint(60, 255, (count, 3)).astype(np.uint8)
+colours[0] = (0, 0, 0)
+cv2.imwrite('segmented.png', colours[labels])
+print("Segmented image saved as segmented.png")
+
+
+# ============================================================
+# OUTPUT
+# ============================================================
+# Otsu threshold selected: 120.0
+# Segments found (excluding background): 3
+#  Segment 1: area =   989 px, centroid = (140, 50)
+#  Segment 2: area =  1957 px, centroid = (50, 60)
+#  Segment 3: area =  2824 px, centroid = (110, 140)
+# Segmented image saved as segmented.png
