@@ -1,0 +1,26 @@
+# CSA17 - Artificial Intelligence | Experiment 33 (Manual Ex. 4.3): K-Nearest Neighbours Classification
+# Name            : V V Naveen Kumar
+# Register Number : 192321018
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(
+    iris.data, iris.target, test_size=0.3, random_state=42, stratify=iris.target)
+
+scaler = StandardScaler().fit(X_train)
+X_train, X_test = scaler.transform(X_train), scaler.transform(X_test)
+
+for k in (1, 3, 5, 7):
+    knn = KNeighborsClassifier(n_neighbors=k).fit(X_train, y_train)
+    print("k = %d accuracy = %.4f" % (k, accuracy_score(y_test, knn.predict(X_test))))
+
+knn = KNeighborsClassifier(n_neighbors=3).fit(X_train, y_train)
+print("\nConfusion matrix (k = 3):")
+print(confusion_matrix(y_test, knn.predict(X_test)))
+new = scaler.transform([[6.0, 3.0, 4.8, 1.8]])
+print("Predicted class for [6.0, 3.0, 4.8, 1.8]:", iris.target_names[knn.predict(new)[0]])
